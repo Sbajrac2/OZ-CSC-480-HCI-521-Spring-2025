@@ -1,5 +1,5 @@
 import React from 'react';
-import LoginBox from '../components/LogIn';
+import LoginBox from '../components/Login';
 
 const LoginPage = ({ setIsAuthenticated, setIsGuest }) => {
   const handleGoogleLogin = () => {

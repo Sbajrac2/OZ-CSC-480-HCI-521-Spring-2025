@@ -37,7 +37,18 @@
     <applicationManager autoExpand="true"/>
 
     <!-- Configures the application on a specified context root -->
-    <webApplication contextRoot="/" location="user-service.war" />
+    <webApplication contextRoot="/" location="user-service.war">
+        <appProperties>
+            <variable name="CONNECTION_STRING" value="${env.CONNECTION_STRING}"/>
+        </appProperties>
+    </webApplication>
+
+    <variable name="ORIGIN" value="localhost:5173"/>
+    <cors domain="/users"
+        allowedOrigins="${ORIGIN}"
+        allowedMethods="GET, POST"
+        allowCredentials="true"/>
+
 
         <!-- Enable static content serving -->
     <httpDispatcher enableWelcomePage="true"/>
