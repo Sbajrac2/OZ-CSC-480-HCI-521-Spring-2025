@@ -23,8 +23,6 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
 
           <Route path="/notifications" element={<NotificationPage />} />
-        </Routes>
-      </div>
           <Route 
             path="/saved-quotes" 
             element={<SavedQuotes userQuotes={userQuotes} bookmarkedQuotes={bookmarkedQuotes} />} 
