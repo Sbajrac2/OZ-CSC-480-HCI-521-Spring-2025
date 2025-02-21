@@ -10,13 +10,11 @@ import { userQuotes, bookmarkedQuotes } from "../placeholderdata"
 const LandingPage = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const quotes = [ //temp data, will replace with real quotes
-    { id: 1, author: "Author 1", text: "This is a sample quote." },
-    { id: 2, author: "Author 2", text: "Another inspiring quote." },
-    { id: 3, author: "Author 3", text: "Yet another meaningful quote." }
-  ];
-
-  const navigate = useNavigate();
+  // const quotes = [ //temp data, will replace with real quotes
+  //   { id: 1, author: "Author 1", text: "This is a sample quote." },
+  //   { id: 2, author: "Author 2", text: "Another inspiring quote." },
+  //   { id: 3, author: "Author 3", text: "Yet another meaningful quote." }
+  // ];
 
   const handleLoginRedirect = () => {
     navigate("/login");
