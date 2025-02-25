@@ -7,7 +7,7 @@ public class SanitizerClass {
     public static String sanitize(String input) {
         if(input == null) return null;
         //forces string to not contain any special characters
-        return input.replaceAll("[^a-zA-Z0-9 ]", "");
+        return input.replaceAll("[^a-zA-Z0-9 .,!?'\"()\\-]", "");
     }
 
     public static QuoteObject sanitizeQuote(QuoteObject quote) {
@@ -17,7 +17,7 @@ public class SanitizerClass {
 
             //do tags
             ArrayList<String> tagList = quote.getTags();
-            if(!tagList.isEmpty()) {
+            if(tagList != null) {
                 for(int i = 0; i < tagList.size(); i++) {
                     String safeTag = sanitize(tagList.get(i));
                     tagList.set(i, safeTag);
@@ -33,5 +33,4 @@ public class SanitizerClass {
         if(input == null) return false;
         return input.matches("^[a-f0-9]{24}$"); //Enforce objectId structure
     }
-
 }

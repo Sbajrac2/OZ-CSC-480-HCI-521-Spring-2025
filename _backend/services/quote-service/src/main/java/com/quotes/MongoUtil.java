@@ -102,7 +102,7 @@ public class MongoUtil {
             return false;
         }
 
-        quote.PrintQuote();
+        //quote.PrintQuote();
         if(quote.getId() == null) {
             System.out.print("Missing ID");
             return false;
@@ -184,7 +184,7 @@ public class MongoUtil {
             if(quoteData.getText().isEmpty()) {
                 return null;
             }
-
+            long unixTime = System.currentTimeMillis() / 1000L;
             //create document to insert
             Document quoteDoc = new Document()
                     .append("_id", quoteData.getId())
@@ -192,7 +192,7 @@ public class MongoUtil {
                     .append("quote", quoteData.getText())
                     .append("bookmarks", 0)
                     .append("shares", 0)
-                    .append("date", quoteData.getDate())
+                    .append("date", unixTime)
                     .append("tags", quoteData.getTags())
                     .append("flags", 0);
 
@@ -208,7 +208,7 @@ public class MongoUtil {
         MongoCollection<Document> collection = database.getCollection("Quotes");
 
         AggregateIterable<Document> results = collection.aggregate(Arrays.asList(
-                new Document("$sort", new Document("bookmarks", -1)), new Document("$limit", 5)));
+                new Document("$sort", new Document("bookmarks", -1)), new Document("$limit", 100)));
 
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
@@ -229,8 +229,29 @@ public class MongoUtil {
         MongoCollection<Document> collection = database.getCollection("Quotes");
 
         AggregateIterable<Document> results = collection.aggregate(Arrays.asList(
-                new Document("$sort", new Document("shares", -1)), new Document("$limit", 5)));
+                new Document("$sort", new Document("shares", -1)), new Document("$limit", 100)));
 
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
+        for(Document doc : results) {
+            doc.put("_id", doc.getObjectId("_id").toString());
+            JsonObject jsonObject = Json.createReader(new java.io.StringReader(doc.toJson())).readObject();
+            jsonArrayBuilder.add(jsonObject);
+        }
+
+        StringWriter stringWriter = new StringWriter();
+        try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {
+            jsonWriter.writeArray(jsonArrayBuilder.build());
+        }
+        return stringWriter.toString();
+    }
+
+    public String getMostRecent() {
+        MongoCollection<Document> collection = database.getCollection("Quotes");
+
+        AggregateIterable<Document> results = collection.aggregate(Arrays.asList(
+                new Document("$sort", new Document("date", -1)), new Document("$limit", 100)));
+                //new Document("$sort", new Document("date", -1)), new Document("$limit", 5)));
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
 
         for(Document doc : results) {

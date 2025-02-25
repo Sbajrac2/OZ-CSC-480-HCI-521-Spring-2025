@@ -1,150 +1,116 @@
 import React, { useState } from "react";
-import { createQuote } from "../lib/api"; 
+import { createQuote } from "../lib/api";
+
 
 const QuoteUploadModal = ({ isVisible, onClose, onSubmit, quoteText, setQuoteText }) => {
   if (!isVisible) return null;
 
-  const [author, setAuthor] = useState("Unknown");
-  const [tags, setTags] = useState(["inspirational", "motivating"]);
+  const [author, setAuthor] = useState("");
+  const [tags, setTags] = useState([]);
   const [customTag, setCustomTag] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
 
-  const handleQuoteTextChange = (e) => setQuoteText(e.target.value);
-  const handleAuthorChange = (e) => setAuthor(e.target.value || "Unknown");
+  // Suggested tags
+  const suggestedTags = ["Inspiration", "Motivation", "Life", "Success", "Wisdom"];
 
-  const handleTagChange = (e) => {
-    const selectedTags = Array.from(e.target.selectedOptions, (option) => option.value);
-    setTags(selectedTags);
+  const toggleTag = (tag) => {
+    setTags((prevTags) =>
+      prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
+    );
   };
 
-  const handleCustomTagChange = (e) => setCustomTag(e.target.value);
-  const handleAddCustomTag = () => {
-    if (customTag && !tags.includes(customTag)) {
-      setTags([...tags, customTag]);
-      setCustomTag("");
+  const addCustomTag = () => {
+    if (customTag.trim() && !tags.includes(customTag)) {
+      setTags([...tags, customTag.trim()]);
     }
+    setCustomTag("");
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
-
-    if (!quoteText.trim()) {  
-      setError("Quote text cannot be empty.");
-      setLoading(false);
-      return;
-    }
+    if (!quoteText.trim()) return;
 
     const quoteData = {
-      quote: quoteText.trim(), // ✅ Changed from "text" to "quote"
-      author: author || "Unknown",
-      tags: tags || [],
-      date: new Date().toISOString().split("T")[0], // Ensure correct date format
+      quote: quoteText.trim(),
+      author: author.trim() || "Unknown",
+      tags,
     };
 
-    console.log("Sending Quote Data:", quoteData); // ✅ Debugging Log
-
     try {
-      const response = await createQuote(quoteData);
-      if (!response || response.error) { 
-        throw new Error("Failed to create quote.");
-      }
-
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      await createQuote(quoteData);
       onSubmit(quoteData);
       setQuoteText("");
-      setAuthor("Unknown");
-      setTags(["inspirational", "motivating"]);
-      setCustomTag("");
+      setAuthor("");
+      setTags([]);
     } catch (err) {
       console.error("Error submitting quote:", err);
-      setError("Error submitting quote. Please try again.");
-    } finally {
-      setLoading(false);
     }
-};
-
-  
+  };
 
   return (
-    <div className="modal show" style={{ display: "block" }} aria-labelledby="uploadQuoteModal">
+    <div className="modal show" style={{ display: "block" }}>
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title" id="uploadQuoteModal">Upload Quote</h5>
+            <h5 className="modal-title">Upload Quote</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
-            <p>Submit your new quote:</p>
-
-            {error && <div className="alert alert-danger">{error}</div>}
-            {success && <div className="alert alert-success">Quote submitted successfully!</div>}
-
             <textarea
               className="form-control"
               rows="3"
               value={quoteText}
-              onChange={handleQuoteTextChange}
+              onChange={(e) => setQuoteText(e.target.value)}
               placeholder="Enter your quote here"
             />
 
             <div className="mt-3">
-              <label htmlFor="authorInput">Author:</label>
+              <label>Author:</label>
               <input
-                id="authorInput"
                 type="text"
                 className="form-control"
                 value={author}
-                onChange={handleAuthorChange}
-                placeholder="Enter author (default is Unknown)"
+                onChange={(e) => setAuthor(e.target.value)}
+                placeholder="Unknown"
               />
             </div>
 
             <div className="mt-3">
               <label>Tags:</label>
-              <select
-                className="form-select"
-                multiple
-                value={tags}
-                onChange={handleTagChange}
-                style={{ borderRadius: "25px" }}
-              >
-                <option value="inspirational">Inspirational</option>
-                <option value="motivating">Motivating</option>
-                <option value="thoughtful">Thoughtful</option>
-                <option value="life">Life</option>
-              </select>
-
-              <div className="d-flex mt-2">
-                <input
-                  type="text"
-                  className="form-control"
-                  value={customTag}
-                  onChange={handleCustomTagChange}
-                  placeholder="Add your own tag"
-                />
-                <button
-                  className="btn btn-outline-primary ms-2"
-                  onClick={handleAddCustomTag}
-                >
-                  Add Tag
-                </button>
+              <div className="mb-2">
+                {suggestedTags.map((tag) => (
+                  <button
+                    key={tag}
+                    className={`badge rounded-pill m-1 ${
+                      tags.includes(tag) ? "bg-primary text-white" : "bg-light text-dark"
+                    }`}
+                    onClick={() => toggleTag(tag)}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+              <input
+                type="text"
+                className="form-control"
+                value={customTag}
+                onChange={(e) => setCustomTag(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && addCustomTag()}
+                placeholder="Add custom tag and press Enter"
+              />
+              <div className="mt-2">
+                {tags.map((tag) => (
+                  <span key={tag} className="badge bg-success rounded-pill m-1">
+                    {tag} ✕
+                  </span>
+                ))}
               </div>
             </div>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? "Submitting..." : "Submit"}
+            <button type="button" className="btn btn-secondary" onClick={onClose}>
+              Close
+            </button>
+            <button type="button" className="btn btn-primary" onClick={handleSubmit}>
+              Submit
             </button>
           </div>
         </div>

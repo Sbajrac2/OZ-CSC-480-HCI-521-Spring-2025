@@ -2,6 +2,8 @@ package com.quotes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.*;
@@ -24,7 +26,7 @@ public class QuotesUpdateResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @APIResponses(value = {
-            @APIResponse(responseCode = "200", description = "The quote was successfully updated. Currently returns no data"),
+            @APIResponse(responseCode = "200", description = "The quote was successfully updated. Returns json {\"success\": \"true\""),
             @APIResponse(responseCode = "409", description = "Error when sanitizing quote texts, or updating into the database"),
             @APIResponse(responseCode = "400", description = "IOException Occurred"),
     })
@@ -55,7 +57,10 @@ public class QuotesUpdateResource {
             boolean updated = mongo.updateQuote(quote);
 
             if(updated) {
-                return Response.ok("Quote updated successfully").build();
+                JsonObject jsonResponse = Json.createObjectBuilder()
+                        .add("success", "true")
+                        .build();
+                return Response.ok(jsonResponse).build();
             } else {
                 return Response.status(Response.Status.CONFLICT).entity("Error updating quote, Json could be wrong or is missing quote ID").build();
             }

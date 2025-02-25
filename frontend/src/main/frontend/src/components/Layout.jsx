@@ -1,13 +1,56 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import TopNavigation from './TopNavigation';
+import LoginBox from './Login';
+import { fetchMe } from '../lib/api';
 
-const Layout = ({ isLoggedIn }) => {
+const Layout = () => {
+  const [user, setUser] = useState(null);
+  const [showLogin, setShowLogin] = useState(null);
+
+  const handleCloseLogin = () => {
+    setShowLogin(false);
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:9081/users/auth/login";
+  };
+
+  const handleGuestLogin = () => {
+    setShowLogin(false);
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        console.log("Fetching user..."); 
+        const data = await fetchMe();
+        console.log("Fetched user:", data);
+        if (data == null) throw "No user"
+        setUser(data);
+      } catch (err) {
+        console.error("Error fetching user", err);
+
+        const timer = setTimeout(() => {
+          setShowLogin(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+          } 
+        })();
+  }, [])
 
   return (
-    <div>
-      <TopNavigation isLoggedIn={isLoggedIn} />
-      <main className="container mt-4">
+    <div className="container">
+      <TopNavigation user={user} />
+      <main>
+      {showLogin && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1050 }}>
+          <div className="bg-white p-4 rounded shadow-lg">
+            <LoginBox handleGoogleLogin={handleGoogleLogin} handleGuestLogin={handleGuestLogin} handleCloseLogin={handleCloseLogin} />
+          </div>
+        </div>
+      )}
+
         <Outlet />
       </main>
     </div>

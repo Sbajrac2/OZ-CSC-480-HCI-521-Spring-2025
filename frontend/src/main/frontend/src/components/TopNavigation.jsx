@@ -1,7 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
-const TopNavigation = ({ isLoggedIn }) => {
+const TopNavigation = ({ user }) => {
 
   const circleStyle = {
     display: 'inline-flex',
@@ -15,6 +14,7 @@ const TopNavigation = ({ isLoggedIn }) => {
     fontSize: '24px'
   };
 
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
         <Link className="navbar-brand pl-2" to="/">Home</Link>
@@ -23,16 +23,17 @@ const TopNavigation = ({ isLoggedIn }) => {
       </button>
       <div className="collapse navbar-collapse pr-2" id="navbarNav">
         <ul className="navbar-nav ml-auto">
-          {!isLoggedIn && (
+          {!user && (
             <li className="nav-item">
               <Link className="nav-link" to="/login">Login</Link>
             </li>
           )}
-          {isLoggedIn && (
+          {user && (
             <li className="nav-item">
               <div style={circleStyle}>
                 <i className="bi bi-person"></i>
               </div>
+              {user.Username}
             </li>
           )}
         </ul>
