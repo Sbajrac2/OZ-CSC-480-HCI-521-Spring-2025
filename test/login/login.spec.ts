@@ -167,3 +167,29 @@ test('TC_GoogleOAuth_001: Logged-in user can see welcome popup', async ({ page }
     // Adjust this selector to whatever confirms you're logged in (e.g., profile, logout, etc.)
     await expect(page.locator('text=Welcome')).toBeVisible();
 });
+
+test('TC_004: User can login with Google (LOG_004)', async ({ page }) => {
+    await page.goto('http://localhost:9080');
+    const googleLogin = page.getByRole('button', { name: 'Continue with Google' });
+    await googleLogin.click();
+
+    await expect(page.locator('[data-testid="login-box"]')).not.toBeVisible();
+});
+
+test('TC_009: App handles failed Google login gracefully (LOG_009)', async ({ page }) => {
+    await page.route('**/users/auth/login', route => {
+        route.fulfill({
+            status: 401,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: false, error: 'Unauthorized' }),
+        });
+    });
+
+    const googleLogin = page.getByRole('button', { name: 'Continue with Google' });
+    await googleLogin.click();
+
+    const errorToast = page.locator('.toast').filter({ hasText: /unauthorized/i });
+    await expect(errorToast).toBeVisible();
+});
+
+

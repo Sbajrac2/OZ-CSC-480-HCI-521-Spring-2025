@@ -55,7 +55,7 @@ public class SharedQuotesResource {
     @Context HttpHeaders headers) {
 
         String authHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
-
+        System.out.println("This \n is \n authorization header: " + authHeader);
         if (authHeader == null || !authHeader.toLowerCase().startsWith("bearer ")) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity(new Document("error", "Missing or invalid Authorization header").toJson())
