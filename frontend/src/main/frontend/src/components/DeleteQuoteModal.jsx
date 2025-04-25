@@ -70,4 +70,5 @@ const DeleteQuoteModal = ({ show, onCancel, onConfirm }) => {
     );
 };
 
+
 export default DeleteQuoteModal;
