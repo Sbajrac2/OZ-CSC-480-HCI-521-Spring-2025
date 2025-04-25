@@ -1,8 +1,9 @@
 package com.sharedQuotes;
 
-
+import javax.management.Notification;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
@@ -11,6 +12,9 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import com.accounts.Account;
 import com.accounts.AccountService;
 import com.accounts.QuoteClient;
+import com.notifications.NotificationObject;
+import com.notifications.NotificationResource;
+
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;

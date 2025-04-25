@@ -4,8 +4,7 @@ import { FocusTrap } from "focus-trap-react";
 const LoginOverlay = ({ setShowLogin, setIsLoggedIn }) => {
   const handleGoogleLogin = () => {
     setIsLoggedIn(true);
-    const PROXY_URL = import.meta.env.VITE_PROXY_URL || "http://localhost:9083"; 
-    window.location.href = `${PROXY_URL}/users/auth/login`;
+    window.location.href = "http://localhost:9081/users/auth/login";
   };
 
   const handleGuestLogin = () => {

@@ -40,8 +40,8 @@ export default function QuoteViewModal({ quote, close, onQuoteUsed }) {
 
           {showLogin && <LoginOverlay setShowLogin={setShowLogin} />}
 
-          <div className="modal-header" style={{borderBottom:"none"}}>
-            <div>
+          <div className="modal-header">
+            <div style={{ textDecoration: "none" }}>
               {quote.tags.map((tag, i) => (
                 <Tag key={i} text={tag} />
               ))}
