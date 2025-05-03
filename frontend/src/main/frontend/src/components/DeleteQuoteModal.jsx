@@ -5,7 +5,9 @@ const DeleteQuoteModal = ({ show, onCancel, onConfirm }) => {
     if (!show) return null;
 
     return (
-        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.3)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999 }}>
+        <div 
+          onClick={(e) => e.stopPropagation()}
+          style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.3)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999 }}>
             <div style={{ 
                 backgroundColor: "#FCFFF7", 
                 padding: "30px 40px", 

@@ -1,16 +1,13 @@
 import Tag from "./Tag";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import QuoteActions from "../buttons/QuoteActions";
 import QuoteUseButton from "../buttons/QuoteUseButton";
-import { UserContext } from "../lib/Contexts";
 import AlertMessage from "./AlertMessage";
 import { fetchUserProfile } from "../lib/api"; 
 
-export default function QuoteViewModal({ quote, close, onBookmarkToggle, onQuoteUsed }) {
+export default function QuoteViewModal({ quote, close, onQuoteUsed }) {
   const [showLogin, setShowLogin] = useState(false);
   const [usedDate, setUsedDate] = useState(null);
-  const [user] = useContext(UserContext);
-  const [editable, setEditable] = useState(false);
   const [uploadedBy, setUploadedBy] = useState("Loading...");
 
   useEffect(() => {
@@ -59,7 +56,6 @@ export default function QuoteViewModal({ quote, close, onBookmarkToggle, onQuote
             </p>
             <QuoteActions
               quote={quote}
-              onBookmarkToggle={onBookmarkToggle}
               setShowLogin={setShowLogin}
             />
             {usedDate && (

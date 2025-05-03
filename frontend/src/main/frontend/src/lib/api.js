@@ -197,9 +197,10 @@ export const handleSend = async (input, quoteId) => {
 
     if (!response.ok) {
       const error = await response.json();
-      alert(`Failed to share with ${input}: ${error.error}`);
+      throw new Error(error.error);
     } else {
-      alert("Quote successfully shared!");
+      const value = await response.json();
+      return value;
     }
   } catch (err) {
     console.error("Error sharing quote:", err);

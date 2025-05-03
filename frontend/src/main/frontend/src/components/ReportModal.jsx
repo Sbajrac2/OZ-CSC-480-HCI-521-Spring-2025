@@ -38,7 +38,7 @@ const ReportModal = ({ showReportModal, onClose, user, quoteID }) => {
     
 
     return showReportModal ? (
-        <div className="modal show" style={{ display: "block", textAlign: "left" }}>
+        <div onClick={(e) => e.stopPropagation()} className="modal show" style={{ display: "block", textAlign: "left" }}>
             <div className="modal-dialog modal-dialog-centered">
 
                 <div className="modal-content" style={{ borderRadius: "10px", padding: "10px 25px 10px 25px" }}>

@@ -33,7 +33,11 @@ public class MyCollectionResource {
 
     @Inject
     AccountService accountService;
-    public static UsedQuoteService usedQuoteService = new UsedQuoteService();
+
+    @Inject
+    UsedQuoteService usedQuoteService;
+
+    public MyCollectionService myCollectionService = new MyCollectionService(usedQuoteService);
 
     public enum SortOptions {
         NONE, USED_NEWEST, USED_OLDEST, CREATED_NEWEST, CREATED_OLDEST;
@@ -158,7 +162,7 @@ public class MyCollectionResource {
                     }
 
                     //remove if no intersection/no matching tags
-                    return intersection(tags, tagsList).isEmpty();
+                    return myCollectionService.intersection(tags, tagsList).isEmpty();
                 });
             }
 
@@ -175,7 +179,7 @@ public class MyCollectionResource {
                         }
                     }
                     //sort by used date
-                    sort_Used_Oldest(usedQuotes, acc, 0, usedQuotes.size()-1);
+                    myCollectionService.sort_Used_Oldest(usedQuotes, acc, 0, usedQuotes.size()-1);
                     Collections.reverse(usedQuotes);
                     //add used quotes back to front of list
                     bookmarkedQuotes.addAll(0, usedQuotes);
@@ -190,7 +194,7 @@ public class MyCollectionResource {
                         }
                     }
                     //sort by used date
-                    sort_Used_Oldest(usedQuotes, acc, 0, usedQuotes.size()-1);
+                    myCollectionService.sort_Used_Oldest(usedQuotes, acc, 0, usedQuotes.size()-1);
                     //add used quotes back to front of list
                     bookmarkedQuotes.addAll(0, usedQuotes);
                 }
@@ -213,50 +217,6 @@ public class MyCollectionResource {
             return Response.ok().entity(bookmarkedQuotes).build();
         }
         return Response.status(Response.Status.NOT_FOUND).entity("Error finding user document").build();
-    }
-
-    private static void sort_Used_Oldest(List<JsonObject> usedQuotes, Account acc, int lower, int upper) {
-        if(upper <= lower) return;
-
-        int pivot = partition(usedQuotes, acc, lower, upper);
-        sort_Used_Oldest(usedQuotes, acc, lower, pivot - 1);
-        sort_Used_Oldest(usedQuotes, acc, pivot + 1, upper);
-    }
-
-    private static int partition(List<JsonObject> usedQuotes, Account acc, int lower, int upper) {
-        try {
-            JsonObject pivotObject = usedQuotes.get(upper);
-            long pivotTime = pivotObject.getInt("date");
-
-            int i = lower - 1;
-            ObjectMapper mapper = new ObjectMapper();
-
-            for(int j = lower; j <= upper - 1; j++) {
-                //get used quote object
-                Document usedQuoteDoc = usedQuoteService.retrieveUsedQuote(acc.UsedQuotes.get(usedQuotes.get(j).getString("_id")));
-                UsedQuote usedQuoteObject = mapper.readValue(usedQuoteDoc.toJson(), UsedQuote.class);
-                if(usedQuoteObject.getUsed().getTime() < pivotTime) {
-                    i++;
-                    JsonObject temp = usedQuotes.get(i);
-                    usedQuotes.set(i, usedQuotes.get(j));
-                    usedQuotes.set(j, temp);
-                }
-            }
-            i++;
-            JsonObject temp = usedQuotes.get(i + 1);
-            usedQuotes.set(i + 1, usedQuotes.get(upper));
-            usedQuotes.set(upper, temp);
-            return i + 1;
-        } catch (JsonProcessingException e) {
-            System.out.print("Error in partition step: "+e);
-            return -1;
-        }
-    }
-
-    private List<String> intersection(List<String> list1, List<String> list2) {
-        List<String> result = new ArrayList<String>(list1);
-        result.retainAll(list2);
-        return result;
     }
 
 }

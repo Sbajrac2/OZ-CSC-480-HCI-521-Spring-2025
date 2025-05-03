@@ -124,7 +124,6 @@ const QuoteCardAdmin = ({
                 bottom: "12px",
                 right: "12px",
                 backgroundColor: "#146C43",
-                color: "#FFFFFF",
                 border: "none",
           
                 borderRadius: "8px",

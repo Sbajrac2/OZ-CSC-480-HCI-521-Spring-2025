@@ -1,11 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { handleSend, searchUsersByQuery } from "../lib/api.js";
+import { AlertContext } from "../lib/Contexts.jsx";
 
 const ShareQuotePopup = ({ quote, onClose }) => {
   const [input, setInput] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [_, setAlert] = useContext(AlertContext)
   const [statusMessage, setStatusMessage] = useState(null); 
   // New state for status message
 
@@ -115,23 +117,18 @@ const ShareQuotePopup = ({ quote, onClose }) => {
 
 
   const handleSendMessage = async () => {
-    try {
-      const sendResult = await handleSend(input, quote._id);
-       // Assume this sends the email and returns a response
-
-      if (sendResult.success) {
-        // Only show success if the send operation is truly successful
-        setStatusMessage("Message sent successfully!");
-      } else {
+    handleSend(input, quote._id)
+      .then(() => {
+        setStatusMessage("Message sent successfully!")
+      })
+      .catch((e) => {
+        console.error("Error sending message:", e);
         setStatusMessage("Failed to send message. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setStatusMessage("Failed to send message. Please try again.");
-    }
-
-    // Close the popup after 2s of showing the message
-    setTimeout(() => onClose(), 2000); 
+      })
+      .finally(() => {
+        // Close the popup after 2s of showing the message
+        setTimeout(() => onClose(), 2000); 
+      })
   };
 
   return (

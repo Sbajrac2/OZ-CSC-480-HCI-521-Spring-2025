@@ -7,7 +7,7 @@ import QuoteContent from "./QuoteContent";
 import QuoteActions from "../buttons/QuoteActions";
 import QuoteUseButton from "../buttons/QuoteUseButton";
 
-const QuoteCard = ({ quote, onBookmarkToggle, showViewModal, onQuoteUsed }) => {
+const QuoteCard = ({ quote, showViewModal, onQuoteUsed, showAdminControls }) => {
   const [user] = useContext(UserContext);
   const [showLogin, setShowLogin] = useState(false);
   const [usedDate, setUsedDate] = useState(null);
@@ -55,7 +55,6 @@ const QuoteCard = ({ quote, onBookmarkToggle, showViewModal, onQuoteUsed }) => {
       <QuoteContent quote={quote} />
       <QuoteActions
         quote={quote}
-        onBookmarkToggle={onBookmarkToggle}
         setShowLogin={setShowLogin}
         user={user}
       />

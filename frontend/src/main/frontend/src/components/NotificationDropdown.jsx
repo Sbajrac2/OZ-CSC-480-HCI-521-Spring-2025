@@ -1,7 +1,7 @@
 import { IoIosArrowDown } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
-import NotificationItem from "./Notification";
+import NotificationItem from "./NotificationItem";
 import { useState, useEffect } from "react";
 import { fetchNotifications, deleteNotification, clearAllNotifications, logout } from "../lib/api";
 import { AlertContext, UserContext } from "../lib/Contexts";
@@ -218,7 +218,7 @@ const NotificationDropdown = ({ isVisible }) => {
                       onRemove={() => handleRemoveNotification(index)}
                     />
                   ))}
-                <div style={{ padding: "6px", textAlign: "center" }}>
+                <div style={{ padding: "6px", textAlign: "center", lineHeight: "18px" }}>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -229,8 +229,8 @@ const NotificationDropdown = ({ isVisible }) => {
                       border: "none",
                       color: "white",
                       cursor: "pointer",
-                      fontSize: "11px",
-                      borderRadius: "16px",
+                      fontSize: "14px",
+                      borderRadius: "5px",
                       padding: "2px 20px",
                     }}
                   >

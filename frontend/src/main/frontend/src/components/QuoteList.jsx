@@ -9,11 +9,6 @@ const QuoteList = ({ topQuotes, loading, error, setShowLogin }) => {
   const closeView = () => setViewedQuote(null);
   const viewQuote = (quote) => setViewedQuote(quote)
 
-  const handleBookmarkToggle = (updatedQuote, bookmarkState) => {
-    console.log("Updated Quote:", updatedQuote);
-    console.log("Bookmark State:", bookmarkState);
-  };
-
   const handleQuoteUsed = (quoteId) => {
     const updatedUsedQuotes = [...usedQuotes, quoteId];
     setUsedQuotes(updatedUsedQuotes);
@@ -30,7 +25,6 @@ const QuoteList = ({ topQuotes, loading, error, setShowLogin }) => {
     {viewedQuote ? <QuoteViewModal 
                       quote={viewedQuote} 
                       close={closeView}   
-                      onBookmarkToggle={handleBookmarkToggle}
                       setShowLogin={setShowLogin}
                       onQuoteUsed={handleQuoteUsed}
                       /> : (<></>)}

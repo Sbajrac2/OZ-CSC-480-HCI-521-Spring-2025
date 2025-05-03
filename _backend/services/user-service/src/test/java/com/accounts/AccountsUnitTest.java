@@ -294,6 +294,18 @@ public class AccountsUnitTest {
         }
     }
 
+    // retrieve users by a query
+    // name or email matching query: code 200
+    // error: code 500
+//    @Test
+//    @Order(18)
+//    void retrieveUsersQueryTC1() {
+//        try (Response response = accountService.retrieveUsersQuery(account.Email)) {
+//            assertEquals(200, response.getStatus());
+//            System.out.println(response.getEntity().toString());
+//        }
+//    }
+
     // Update account by ID and accountJson
     // Update (success) code 200
     // Update (invalid JSON) code 400
@@ -363,6 +375,36 @@ public class AccountsUnitTest {
         try(Response response = accountService.updateUser(account.toJson(), new ObjectId().toString())) {
             assertEquals(404, response.getStatus());
         }
+    }
+
+    // retrieve accountID by email
+    // returns ObjectID of account
+    @Test
+    @Order(26)
+    void getAccountIdByEmailTC1() {
+        String accountId = accountService.getAccountIdByEmail(account.Email);
+        assertEquals(id.toString(), accountId);
+    }
+
+    @Test
+    @Order(26)
+    void getAccountIdByEmailTC2() {
+        String accountId = accountService.getAccountIdByEmail("");
+        assertNull(accountId);
+    }
+
+    @Test
+    @Order(26)
+    void getAccountIdByEmailTC3() {
+        String accountId = accountService.getAccountIdByEmail("testuser@oswego.edu");
+        assertNull(accountId);
+    }
+
+    @Test
+    @Order(26)
+    void getAccountIdByEmailTC4() {
+        String accountId = accountService.getAccountIdByEmail(null);
+        assertNull(accountId);
     }
 
     // DELETE Delete account by ID
