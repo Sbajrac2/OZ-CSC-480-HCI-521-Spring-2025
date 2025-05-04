@@ -3,6 +3,7 @@ import QuoteCard from "../components/QuoteCard";
 import Input from "../components/Input";
 import Sidebar from "../components/Sidebar";
 import ToggleButton from "../buttons/ToggleButton";
+import QuoteViewModal from "../components/QuoteViewModal";
 import { fetchQuoteById, fetchUserQuotes, fetchUsedQuotes } from "../lib/api";
 import { UserContext } from "../lib/Contexts";
 
@@ -15,7 +16,10 @@ const MyCollection = () => {
   const [showUsed, setShowUsed] = useState("all");
   const [usedQuotes, setUsedQuotes] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]); 
+  const [viewedQuote, setViewedQuote] = useState(null);
   const [user] = useContext(UserContext);
+
+  const closeView = () => setViewedQuote(null); 
 
   useEffect(() => {
     if (!user?._id) return;
@@ -67,7 +71,10 @@ const MyCollection = () => {
     }
   };
 
-  const displayedQuotes = filteredQuotes.filter(({ _id, author, quote, tags }) => {
+  const displayedQuotes = Array.from(
+    new Set(filteredQuotes.map((quote) => quote._id))
+  ).map((id) => filteredQuotes.find((quote) => quote._id === id))
+  .filter(({ _id, author, quote, tags }) => {
     const matchesSearch =
       author.toLowerCase().includes(searchTerm) ||
       quote.toLowerCase().includes(searchTerm) ||
@@ -129,6 +136,7 @@ const MyCollection = () => {
                   key={quote._id}
                   quote={quote}
                   onQuoteUsed={handleQuoteUsed}
+                  showViewModal={setViewedQuote} 
                 />
               ))
             ) : (
@@ -137,6 +145,12 @@ const MyCollection = () => {
           </div>
         </div>
       </div>
+      {viewedQuote && (
+        <QuoteViewModal
+          quote={viewedQuote}
+          close={closeView}
+        />
+      )}
     </div>
   );
 };

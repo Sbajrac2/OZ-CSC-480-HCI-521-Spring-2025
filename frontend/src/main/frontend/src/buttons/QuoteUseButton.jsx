@@ -18,6 +18,7 @@ const QuoteUseButton = ({ quote, setShowLogin, onQuoteUsed }) => {
       await useQuote(quote._id); 
       setAlert({ type: "success", message: "Quote marked as used!" });
       setUsed(true);
+      window.location.reload(); 
       onQuoteUsed?.(quote._id); 
     } catch (error) {
       setAlert({ type: "danger", message: "Failed to mark quote as used." });
