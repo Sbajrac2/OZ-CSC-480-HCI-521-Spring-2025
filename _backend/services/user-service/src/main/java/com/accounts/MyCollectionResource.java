@@ -179,7 +179,7 @@ public class MyCollectionResource {
                         }
                     }
                     //sort by used date
-                    myCollectionService.sort_Used_Oldest(usedQuotes, acc, 0, usedQuotes.size()-1);
+                    MyCollectionService.sort_Used_Oldest(usedQuotes, acc, 0, usedQuotes.size()-1);
                     Collections.reverse(usedQuotes);
                     //add used quotes back to front of list
                     bookmarkedQuotes.addAll(0, usedQuotes);
@@ -194,7 +194,7 @@ public class MyCollectionResource {
                         }
                     }
                     //sort by used date
-                    myCollectionService.sort_Used_Oldest(usedQuotes, acc, 0, usedQuotes.size()-1);
+                    MyCollectionService.sort_Used_Oldest(usedQuotes, acc, 0, usedQuotes.size()-1);
                     //add used quotes back to front of list
                     bookmarkedQuotes.addAll(0, usedQuotes);
                 }
@@ -218,5 +218,4 @@ public class MyCollectionResource {
         }
         return Response.status(Response.Status.NOT_FOUND).entity("Error finding user document").build();
     }
-
 }
