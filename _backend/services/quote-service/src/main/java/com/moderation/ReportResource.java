@@ -102,7 +102,6 @@ public class ReportResource {
             return Response.status(Response.Status.UNAUTHORIZED).entity(new Document("error", "User not authorized to create quotes").toJson()).build();
         }
 
-
         try {
             Document reportDoc = Document.parse(reportJson);
             
@@ -146,10 +145,16 @@ public class ReportResource {
                 // add new context_type if its not the same as an existing one
                 @SuppressWarnings("unchecked")
                 List<String> contextTypes = (List<String>) existingReport.get("context_types");
-                if (!contextTypes.contains(contextType)) {
-                    contextTypes.add(contextType);
-                    existingReport.put("context_types", contextTypes);
+                
+                // support for single user, multiple resons
+                String[] splitTypes = contextType.split(",");
+                for (String type : splitTypes) {
+                    String trimmed = type.trim();
+                    if (!trimmed.isEmpty() && !contextTypes.contains(trimmed)) {
+                        contextTypes.add(trimmed);
+                    }
                 }
+                existingReport.put("context_types", contextTypes);
                 
                 // add custom_message (ignores if empty)
                 if (message != null && !message.trim().isEmpty()) {
@@ -170,9 +175,21 @@ public class ReportResource {
                 Document newReport = new Document()
                         .append("_id", new ObjectId())
                         .append("quote_id", quoteId)
-                        .append("reporter_ids", new ArrayList<String>(List.of(accountID)))
-                        .append("context_types", new ArrayList<String>(List.of(contextType)))
-                        .append("report_date", (int)(System.currentTimeMillis() / 1000))
+                        .append("reporter_ids", new ArrayList<String>(List.of(accountID)));
+                
+                // support for single user, multiple resons
+                List<String> contextTypesList = new ArrayList<>();
+                String[] splitTypes = contextType.split(",");
+                for (String type : splitTypes) {
+                    String trimmed = type.trim();
+                    if (!trimmed.isEmpty()) {
+                        contextTypesList.add(trimmed);
+                    }
+                }
+                newReport.append("context_types", contextTypesList);
+                
+                
+                newReport.append("report_date", (int)(System.currentTimeMillis() / 1000))
                         .append("status", ReportObject.STATUS_OPEN);
                 
                 // add custom_message (ignores if empty)
@@ -310,7 +327,7 @@ public class ReportResource {
             
             @Context HttpHeaders headers) {
 
-        // auth
+        // auth 
         String authHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
 
         if (authHeader == null || !authHeader.toLowerCase().startsWith("bearer ")) {
@@ -333,7 +350,8 @@ public class ReportResource {
         String group = jwtMap.get("group");
         if (group == null || accountID == null) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(new Document("error", "User not authorized for admin panel").toJson()).build();
-        }
+        } 
+        
         
         try {
             List<Document> filteredReports = new ArrayList<>();
