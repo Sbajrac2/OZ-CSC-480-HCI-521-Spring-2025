@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { fetchReportedQuotes } from "../lib/api";
 import QuoteCardAdmin from "../components/QuoteCardAdmin";
 import { useMemo } from "react";
-import Sidebar from "../components/SidebarAdmin";
+// import Sidebar from "../components/SidebarAdmin";
 import SidebarAdmin from "../components/SidebarAdmin";
-import { LayoutSidebar } from "react-bootstrap-icons";
+// import { LayoutSidebar } from "react-bootstrap-icons";
 
 
 export default function AdminPanel() {
@@ -12,8 +12,10 @@ export default function AdminPanel() {
 
   // State for sorting
   const [filter, setFilter] = useState("Most Reported"); 
+  const [showFiltered, setShowFiltered] = useState(false)
    // Tags filter state
   const [selectedTags, setSelectedTags] = useState([]);
+  const [filteredQuotes, setFilteredQuotes] = useState([]);
 
   useEffect(() => {
     fetchReportedQuotes()
@@ -68,37 +70,99 @@ export default function AdminPanel() {
   }, [rawReports, filter, selectedTags]);
 
   // Handle filter changes (called from SidebarAdmin)
-  const handleFilterChange = (newFilter, selectedTags) => {
-    setFilter(newFilter); // Update sorting filter
-    setSelectedTags(selectedTags); // Update tag filters
+  const handleFilterChange = (selectedReportFrequency, selectedReportCreated, selectedTags) => {
+    setShowFiltered(true)
+    let filteredQuote = [...mergedReports];
+    console.log("filtered quotes: ", filteredQuote);
+  
+    // Filter by selected report reasons (tags)
+    if (selectedTags.length > 0) {
+      filteredQuote = filteredQuote.filter((quote) =>
+        selectedTags.every((tag) => quote.reportReasons.includes(tag)) // Assuming each quote has a 'reportReasons' array
+      );
+    }
+  
+    // Apply additional filters based on report frequency and created time
+    if (selectedReportFrequency === "Most Reported") {
+      filteredQuote = filteredQuote.sort((a, b) => b.reportCount - a.reportCount);
+    }
+  
+    if (selectedReportCreated === "Recent Reports") {
+      filteredQuote = filteredQuote.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+  
+    // Update the state with filtered quotes
+    setFilteredQuotes(filteredQuote);
   };
+  
 
-  return (
-    <div style={{ padding: 20 }}>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 20 }}>
-          {/* Display Sidebar and filter by tags */}
-          <SidebarAdmin
-              onFilterChange={handleFilterChange}
-              onTagSelect={setSelectedTags}
-            />
+//   return (
+//     <div style={{ padding: 20 }}>
+//       <div style={{ display: "flex", flexWrap: "wrap", gap: 20 }}>
+//           {/* Display Sidebar and filter by tags */}
+//           <SidebarAdmin
+//               onFilterChange={handleFilterChange}
+//               onTagSelect={setSelectedTags}
+//             />
 
-<div style={{ flex: 1 }}>
-          {mergedReports.length > 0 ? (
-            mergedReports.map(({ quote, reportCount, reportReasons }) => (
-              <QuoteCardAdmin
-                key={quote._id}
-                quote={quote}
-                reportCount={reportCount}
-                reportReasons={reportReasons}
-              />
-            ))
-          ) : (
-            <p>No reports found based on the selected filters.</p>
-          )}
-        </div>
+// <div style={{ flex: 1 }}>
+//           {mergedReports.length > 0 ? (
+//              mergedReports.map(({ quote, reportCount, reportReasons }) => (
+//               <QuoteCardAdmin
+//                 key={quote._id}
+//                 quote={quote}
+//                 reportCount={reportCount}
+//                 reportReasons={reportReasons}
+//               />
+//             ))
+//           ) : (
+//             <p>No reports found based on the selected filters.</p>
+//           )}
+//         </div>
      
+//       </div>
+//     </div>
+//   );
+
+return (
+  <div style={{ padding: 20 }}>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 20 }}>
+      <SidebarAdmin
+        onFilterChange={handleFilterChange}
+        onTagSelect={setSelectedTags}
+      />
+
+      <div style={{ flex: 1 }}>
+        {/* Display filtered quotes if filters are applied */}
+        {showFiltered && filteredQuotes.length > 0 ? (
+          filteredQuotes.map(({ quote, reportCount, reportReasons }) => (
+            <QuoteCardAdmin
+              key={quote._id}
+              quote={quote}
+              reportCount={reportCount}
+              reportReasons={reportReasons}
+            />
+          ))
+        ) : (
+          <div>
+            {/* Display merged quotes by default */}
+            {!showFiltered && mergedReports.length > 0 ? (
+              mergedReports.map(({ quote, reportCount, reportReasons }) => (
+                <QuoteCardAdmin
+                  key={quote._id}
+                  quote={quote}
+                  reportCount={reportCount}
+                  reportReasons={reportReasons}
+                />
+              ))
+            ) : (
+              <p>No reports found based on the selected filters.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
-  );
+  </div>
+);
 }
 
