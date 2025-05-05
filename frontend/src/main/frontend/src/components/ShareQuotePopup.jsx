@@ -53,6 +53,8 @@ const ShareQuotePopup = ({ quote, onClose }) => {
 
     return () => clearTimeout(timeout);
   }, [input]);
+
+
    // close on outside click
     // useEffect(() => {
     //     const handleClickOutside = (e) => {
