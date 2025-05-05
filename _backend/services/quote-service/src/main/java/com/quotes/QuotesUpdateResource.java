@@ -99,6 +99,11 @@ public class QuotesUpdateResource {
                 return Response.status(Response.Status.UNAUTHORIZED).entity(new Document("error", "User not authorized to update quotes").toJson()).build();
             }
 
+            if (!accountObjectID.equals(oldQuote.getCreator()) && group.equals("admin") && oldQuote.getFlags() == 0) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new Document("error", "Admins are not authorized to update quotes that have not been flagged").toJson()).build();
+            }
+
             quote = SanitizerClass.sanitizeQuote(quote);
             if(quote == null) {
                 return Response.status(Response.Status.CONFLICT).entity("Error when sanitizing quote, returned null").build();

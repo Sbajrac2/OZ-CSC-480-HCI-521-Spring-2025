@@ -99,6 +99,12 @@ public class QuoteDeleteResource {
                 return Response.status(Response.Status.UNAUTHORIZED).entity(new Document("error", "User not authorized to delete quotes").toJson()).build();
             }
 
+            if (!accountObjectID.equals(quote.getCreator()) && group.equals("admin") && quote.getFlags() == 0) {
+                System.out.println("not flagged");
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new Document("error", "Admins are not authorized to delete quotes that have not been flagged").toJson()).build();
+            }
+
             if (group.equals("admin")) {
                 DeleteService deleteService = new DeleteService();
                 Document deleteQuoteDoc = new Document("author", quote.getAuthor())

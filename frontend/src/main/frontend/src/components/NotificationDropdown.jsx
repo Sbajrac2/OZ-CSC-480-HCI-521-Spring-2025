@@ -1,6 +1,6 @@
 import { IoIosArrowDown } from "react-icons/io";
 import { Link } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import NotificationItem from "./NotificationItem";
 import { useState, useEffect } from "react";
 import { fetchNotifications, deleteNotification, clearAllNotifications, logout } from "../lib/api";
@@ -13,6 +13,7 @@ const NotificationDropdown = ({ isVisible }) => {
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [user] = useContext(UserContext);
   const borderColor = "#0d5c05"; 
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const loadNotifications = async () => {
@@ -28,6 +29,22 @@ const NotificationDropdown = ({ isVisible }) => {
     if (isVisible) {
       loadNotifications();
     }
+
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsNotificationsVisible(false);
+      }
+    };
+  
+    if (isVisible) {
+      loadNotifications();
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+
   }, [isVisible, user]);
 
   const handleRemoveNotification = async (index) => {
@@ -63,6 +80,7 @@ const NotificationDropdown = ({ isVisible }) => {
 
   return (
     <div
+    ref={dropdownRef}
       style={{
         position: "absolute",
         top: "60px",
