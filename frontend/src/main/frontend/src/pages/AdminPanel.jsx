@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchReportedQuotes } from "../lib/api";
 import QuoteCardAdmin from "../components/QuoteCardAdmin";
 import { useMemo } from "react";
+import SidebarAdmin from "../components/SidebarAdmin";
 
 export default function AdminPanel() {
   const [rawReports, setRawReports] = useState([]);
