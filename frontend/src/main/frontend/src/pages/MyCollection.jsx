@@ -117,6 +117,7 @@ const MyCollection = () => {
           sharedQuotes={sharedQuotes} 
           onFilterChange={handleFilterChange}
           onTagSelect={setSelectedTags}
+          myQuotesIds={user?.MyQuotes || []} 
         />
         <div
           className="col"
